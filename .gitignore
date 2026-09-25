@@ -3,4 +3,3 @@ __pycache__
 config.toml
 *.zip
 data/data.db/
-.github

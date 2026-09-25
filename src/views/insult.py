@@ -5,7 +5,7 @@ import discord
 import random
 
 from src.utils.helpers import send_message_http
-from src.utils.helpers import deny_embed
+
 
 
 def load_insults() -> list[str]:

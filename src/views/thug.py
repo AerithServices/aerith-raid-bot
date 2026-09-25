@@ -4,7 +4,7 @@ import random
 import aiohttp
 import discord
 from src.utils.helpers import send_message_http, Aerith_INVITE
-from src.utils.helpers import deny_embed
+
 
 def load_gifs() -> list[str]:
     try:

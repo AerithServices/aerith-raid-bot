@@ -49,7 +49,7 @@ class RaidCog(commands.Cog):
         if preset:
             preset_content = await get_preset_by_title(str(interaction.user.id), preset)
 
-        await interaction.followup.send(view=SpamButton(interaction.user.id, preset_content, ephemeral=True)
+        await interaction.followup.send(view=SpamButton(interaction.user.id, preset_content, ephemeral=True))
         await log_command(interaction, "ra1d", "user raided a server")
 
     @app_commands.command(name="interaction-ra1d", description="raid using stored interaction webhook tokens")
@@ -66,14 +66,14 @@ class RaidCog(commands.Cog):
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def custom_ra1d(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True, thinking=True)
-        await interaction.followup.send(view=PresetManagementView(interaction.user.id, ephemeral=True)
+        await interaction.followup.send(view=PresetManagementView(interaction.user.id, ephemeral=True))
         await log_command(interaction, "custom_ra1d", "user opened custom message panel")
 
     @app_commands.command(name="thug", description="thug the server!!")
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def thug(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True, thinking=True)
-        await interaction.followup.send(view=ThugView(interaction.user.id, ephemeral=True)
+        await interaction.followup.send(view=ThugView(interaction.user.id, ephemeral=True))
         await log_command(interaction, "thug", "user thugged a server 😂")
 
     @app_commands.command(name="interactionthug", description="thug raid using stored interaction webhook tokens")
@@ -129,7 +129,7 @@ class RaidCog(commands.Cog):
         if "discord.gg/" in text.lower():
             text = re.sub(r'(?:https?://)?discord\.gg/\S+', Aerith_INVITE, text)
 
-        await interaction.followup.send(view=custom_spam_panel(interaction.user.id, text, ephemeral=True)
+        await interaction.followup.send(view=custom_spam_panel(interaction.user.id, text, ephemeral=True))
         await log_command(interaction, "spam", f"user spammed: {text}")
 
     @app_commands.command(name="multiplespam", description="spam multiple messages randomly")
@@ -166,7 +166,7 @@ class RaidCog(commands.Cog):
             await interaction.followup.send("You need to provide at least one message!", ephemeral=True)
             return
 
-        await interaction.followup.send(view=multiplespam_panel(messages, ephemeral=True)
+        await interaction.followup.send(view=multiplespam_panel(messages, ephemeral=True))
         await log_command(interaction, "multiplespam", f"user spammed {len(messages)} messages randomly")
 
     @app_commands.command(name="insult", description="insult a user with a roast button.")

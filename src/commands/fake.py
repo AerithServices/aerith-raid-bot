@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageOps, ImageFont
 from datetime import datetime
 
 from src.utils.helpers import log_command
-from src.utils.helpers import deny_embed
+
 from src.views import FakeNitroView, fake_giveaway
 
 

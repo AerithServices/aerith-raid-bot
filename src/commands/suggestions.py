@@ -3,7 +3,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from src.utils.helpers import log_command, OWNER_IDS, deny_embed, success_embed
+from src.utils.helpers import log_command, OWNER_IDS
 
 FALLBACK_ICON = "https://cdn.discordapp.com/embed/avatars/0.png"
 

@@ -7,8 +7,7 @@ from src.utils.db import (
     delete_user_preset
 )
 
-from src.utils.helpers import Aerith_INVITE
-from src.utils.helpers import deny_embed, success_embed
+from src.utils.helpers import Aerith_INVITE, success_embed
 
 class PresetManagementView(discord.ui.LayoutView):
     def __init__(self, user_id: int):
@@ -104,7 +103,7 @@ class PresetManagementView(discord.ui.LayoutView):
                         return False
                     return True
 
-            await interaction.response.send_message(view=DynamicListView(, ephemeral=True)
+            await interaction.response.send_message(view=DynamicListView(), ephemeral=True)
             return False
 
         if cid == "delete_preset":
@@ -151,11 +150,11 @@ class PresetManagementView(discord.ui.LayoutView):
                             async def cancel(self2, it2: discord.Interaction, button: discord.ui.Button):
                                 await it2.response.edit_message(content="Cancelled.", view=None)
 
-                        await it.response.send_message(f"Are you sure you want to delete `{title}`?", view=ConfirmDelete(uid, title, ephemeral=True)
+                        await it.response.send_message(f"Are you sure you want to delete `{title}`?", view=ConfirmDelete(uid, title), ephemeral=True)
                         return False
                     return True
 
-            await interaction.response.send_message(view=DynamicDeleteView(, ephemeral=True)
+            await interaction.response.send_message(view=DynamicDeleteView(), ephemeral=True)
             return False
 
         return True

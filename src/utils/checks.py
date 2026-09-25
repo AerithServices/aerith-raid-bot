@@ -2,7 +2,7 @@ import discord
 import tomllib
 from discord import app_commands
 from src.utils.db import is_server_blacklisted, is_user_blacklisted
-from src.utils.helpers import deny_embed
+
 
 with open("config.toml", "rb") as f:
     _config = tomllib.load(f)

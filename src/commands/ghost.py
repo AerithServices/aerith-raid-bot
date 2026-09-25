@@ -15,7 +15,7 @@ class GhostCog(commands.Cog):
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def ghostping(self, interaction: discord.Interaction, user: discord.User):
         await interaction.response.defer(ephemeral=True, thinking=True)
-        await interaction.followup.send(view=PingPanel(user.id, ephemeral=True)
+        await interaction.followup.send(view=PingPanel(user.id, ephemeral=True))
         await log_command(interaction, "ghost ping", f"user ghost-pinged: {user.id}")
 
     @app_commands.command(name="ghostsay", description="say something then delete")
