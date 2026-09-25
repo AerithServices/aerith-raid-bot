@@ -78,7 +78,7 @@ class FakeCog(commands.Cog):
         try:
             user = await self.bot.fetch_user(int(user_id))
         except (ValueError, discord.NotFound):
-            await interaction.followup.send(embed=deny_embed("Invalid user ID"), ephemeral=True)
+            await interaction.followup.send("Invalid user ID", ephemeral=True)
             return
 
         username = user.display_name

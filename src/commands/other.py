@@ -226,7 +226,7 @@ class OtherCog(commands.Cog):
                     return False
 
 
-        await interaction.followup.send(view=Components(), ephemeral=True)
+        await interaction.followup.send(view=Components(, ephemeral=True)
 
     @app_commands.command(name="webhook-spam", description="spam a webhook.")
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)

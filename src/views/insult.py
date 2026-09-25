@@ -40,7 +40,7 @@ def insult_panel(user: discord.User, delay: int = 0):
 
                 insults = load_insults()
                 if len(insults) < 5:
-                    await interaction.followup.send(embed=deny_embed("insults.txt must contain at least 5 insults!"), ephemeral=True)
+                    await interaction.followup.send("insults.txt must contain at least 5 insults!", ephemeral=True)
                     return False
 
                 app_id = interaction.client.application_id

@@ -26,13 +26,13 @@ async def global_interaction_check(interaction: discord.Interaction) -> bool:
         return True
 
     if await is_user_blacklisted(str(user_id)):
-        await interaction.response.send_message(embed=deny_embed("You are blacklisted from using the bot."), ephemeral=True)
+        await interaction.response.send_message("You are blacklisted from using the bot.", ephemeral=True)
         return False
 
     guild_id = interaction.guild_id
 
     if guild_id and await is_server_blacklisted(str(guild_id)):
-        await interaction.response.send_message(embed=deny_embed("This server is blacklisted."), ephemeral=True)
+        await interaction.response.send_message("This server is blacklisted.", ephemeral=True)
         return False
 
     if interaction.type != discord.InteractionType.application_command:
@@ -45,7 +45,7 @@ async def global_interaction_check(interaction: discord.Interaction) -> bool:
         return True
 
     if MAIN_SERVER_ID and guild_id is not None and int(guild_id) == MAIN_SERVER_ID:
-        await interaction.response.send_message(embed=deny_embed("u can't raid this server lil bro 😂✌🏿"), ephemeral=True)
+        await interaction.response.send_message("u can't raid this server lil bro 😂✌🏿", ephemeral=True)
         return False
 
     guild = interaction.client.get_guild(REQUIRED_SERVER_ID)

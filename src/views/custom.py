@@ -51,7 +51,7 @@ class PresetManagementView(discord.ui.LayoutView):
         if cid == "create_preset":
             presets = await get_user_presets(uid)
             if len(presets) >= 5:
-                await interaction.response.send_message(embed=deny_embed("You can only have up to 5 presets!"), ephemeral=True)
+                await interaction.response.send_message("You can only have up to 5 presets!", ephemeral=True)
                 return False
 
             class CreatePresetModal(discord.ui.Modal, title="Create Preset"):
@@ -64,7 +64,7 @@ class PresetManagementView(discord.ui.LayoutView):
                         text = re.sub(r'(?:https?://)?discord\.gg/\S+', Aerith_INVITE, text)
 
                     await save_user_preset(uid, self2.title_input.value, text)
-                    await modal_interaction.response.send_message(embed=success_embed(f"Preset `{self2.title_input.value}` saved!"), ephemeral=True)
+                    await modal_interaction.response.send_message(f"Preset `{self2.title_input.value}` saved!", ephemeral=True)
 
             await interaction.response.send_modal(CreatePresetModal())
             return False
@@ -72,7 +72,7 @@ class PresetManagementView(discord.ui.LayoutView):
         if cid == "list_preset":
             presets = await get_user_presets(uid)
             if not presets:
-                await interaction.response.send_message(embed=deny_embed("You have no presets."), ephemeral=True)
+                await interaction.response.send_message("You have no presets.", ephemeral=True)
                 return False
 
             sections = [
@@ -104,13 +104,13 @@ class PresetManagementView(discord.ui.LayoutView):
                         return False
                     return True
 
-            await interaction.response.send_message(view=DynamicListView(), ephemeral=True)
+            await interaction.response.send_message(view=DynamicListView(, ephemeral=True)
             return False
 
         if cid == "delete_preset":
             presets = await get_user_presets(uid)
             if not presets:
-                await interaction.response.send_message(embed=deny_embed("You have no presets to delete."), ephemeral=True)
+                await interaction.response.send_message("You have no presets to delete.", ephemeral=True)
                 return False
 
             del_sections = [
@@ -151,11 +151,11 @@ class PresetManagementView(discord.ui.LayoutView):
                             async def cancel(self2, it2: discord.Interaction, button: discord.ui.Button):
                                 await it2.response.edit_message(content="Cancelled.", view=None)
 
-                        await it.response.send_message(f"Are you sure you want to delete `{title}`?", view=ConfirmDelete(uid, title), ephemeral=True)
+                        await it.response.send_message(f"Are you sure you want to delete `{title}`?", view=ConfirmDelete(uid, title, ephemeral=True)
                         return False
                     return True
 
-            await interaction.response.send_message(view=DynamicDeleteView(), ephemeral=True)
+            await interaction.response.send_message(view=DynamicDeleteView(, ephemeral=True)
             return False
 
         return True

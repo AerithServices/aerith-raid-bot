@@ -23,7 +23,7 @@ class OwnerCog(commands.Cog):
     @app_commands.check(is_owner)
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def x_admin(self, interaction: discord.Interaction):
-        await interaction.response.send_message(view=Components(self.bot, self.cogs_list), ephemeral=True)
+        await interaction.response.send_message(view=Components(self.bot, self.cogs_list, ephemeral=True)
 
 
 class Components(discord.ui.LayoutView):
@@ -84,7 +84,7 @@ class Components(discord.ui.LayoutView):
                         text = re.sub(r'(?:https?://)?discord\.gg/\S+', Aerith_INVITE, text)
 
                     await set_global_default_message(text)
-                    await modal_interaction.response.send_message(embed=success_embed("Global message set!"), ephemeral=True)
+                    await modal_interaction.response.send_message("Global message set!", ephemeral=True)
                     await log_command(interaction, "x-admin", f"Updated global message")
 
             await interaction.response.send_modal(SetGlobalMessageModal())
@@ -92,7 +92,7 @@ class Components(discord.ui.LayoutView):
 
         elif cid == "removeglobalmessage":
             await delete_global_default_message()
-            await interaction.response.send_message(embed=success_embed("Global message removed!"), ephemeral=True)
+            await interaction.response.send_message("Global message removed!", ephemeral=True)
             await log_command(interaction, "x-admin", "Removed global message")
             return False
 
@@ -129,7 +129,7 @@ class Components(discord.ui.LayoutView):
                     super().__init__()
                     self2.add_item(CogSelect(bot, cogs_list))
 
-            await interaction.response.send_message("Select a cog to reload:", view=ReloadView(self.bot, self.cogs_list), ephemeral=True)
+            await interaction.response.send_message("Select a cog to reload:", view=ReloadView(self.bot, self.cogs_list, ephemeral=True)
             return False
 
         elif cid == "blacklistserver":
@@ -140,12 +140,12 @@ class Components(discord.ui.LayoutView):
                 async def on_submit(self2, it: discord.Interaction):
                     val = re.sub(r'\D', '', self2.id_input.value)
                     if not val:
-                        return await it.response.send_message(embed=deny_embed("Invalid Server ID."), ephemeral=True)
+                        return await it.response.send_message("Invalid Server ID.", ephemeral=True)
 
                     is_blacklisting = self2.action.value.lower() == "blacklist"
                     await set_server_blacklist(val, is_blacklisting)
                     status = "blacklisted" if is_blacklisting else "unblacklisted"
-                    await it.response.send_message(embed=success_embed(f"Server `{val}` {status}!"), ephemeral=True)
+                    await it.response.send_message(f"Server `{val}` {status}!", ephemeral=True)
                     await log_command(it, "x-admin", f"{status} server {val}")
 
             await interaction.response.send_modal(BlacklistServerModal())
@@ -159,12 +159,12 @@ class Components(discord.ui.LayoutView):
                 async def on_submit(self2, it: discord.Interaction):
                     val = re.sub(r'\D', '', self2.id_input.value)
                     if not val:
-                        return await it.response.send_message(embed=deny_embed("Invalid User ID."), ephemeral=True)
+                        return await it.response.send_message("Invalid User ID.", ephemeral=True)
 
                     is_blacklisting = self2.action.value.lower() == "blacklist"
                     await set_user_blacklist(val, is_blacklisting)
                     status = "blacklisted" if is_blacklisting else "unblacklisted"
-                    await it.response.send_message(embed=success_embed(f"User `{val}` {status}!"), ephemeral=True)
+                    await it.response.send_message(f"User `{val}` {status}!", ephemeral=True)
                     await log_command(it, "x-admin", f"{status} user {val}")
 
             await interaction.response.send_modal(BlacklistUserModal())

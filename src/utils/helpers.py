@@ -166,29 +166,3 @@ async def send_message_http(session: aiohttp.ClientSession, application_id: int,
     payload = {"content": content, "allowed_mentions": {"parse": ["everyone", "users", "roles"]}}
     async with session.post(url, json=payload) as resp:
         return resp.status
-
-
-DENY_COLOR = 12395813
-SUCCESS_COLOR = 5487909
-WARN_COLOR = 12107045
-
-DENY_EMOJI = "<:deny:1529732544189304923>"
-SUCCESS_EMOJI = "<:approve:1529732623273037895>"
-WARN_EMOJI = "<:warn:1529733126547308544>"
-
-
-def deny_embed(message: str) -> discord.Embed:
-    return discord.Embed(
-        description=f"{DENY_EMOJI} {message}",
-        color=DENY_COLOR)
-
-
-def success_embed(message: str) -> discord.Embed:
-    return discord.Embed(
-        description=f"{SUCCESS_EMOJI} {message}",
-        color=SUCCESS_COLOR)
-
-def warn_embed(message: str) -> discord.Embed:
-    return discord.Embed(
-        description=f"{WARN_EMOJI} {message}",
-        color=WARN_COLOR)
