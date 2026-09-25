@@ -1,3 +1,14 @@
+name: Discord Commit Logger
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
       - name: Send commit info to Discord
         env:
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
