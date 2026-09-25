@@ -17,28 +17,35 @@ jobs:
           # 1. Basic Info
           REPO_FULL=${{ github.repository }}
           REPO_NAME=$(echo "$REPO_FULL" | cut -d'/' -f2)
+          REPO_OWNER=${{ github.repository_owner }}
           REPO_URL="https://github.com/${{ github.repository }}"
           COMMIT_COUNT=$(jq -r '.commits | length' "$GITHUB_EVENT_PATH")
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
           LAST_COMMIT_MSG=$(jq -r '.commits[-1].message' "$GITHUB_EVENT_PATH" | head -n 1)
           AUTHOR_NAME=$(jq -r '.commits[-1].author.name' "$GITHUB_EVENT_PATH")
-          PUSHER_ICON=$(jq -r '.sender.avatar_url' "$GITHUB_EVENT_PATH")
 
-          # 2. Construct Payload matching the new embed style
+          # 2. Fetch the repo owner's avatar
+          OWNER_ICON=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/users/$REPO_OWNER" | jq -r '.avatar_url')
+
+          # 3. Construct Payload
           PAYLOAD=$(jq -n \
+            --arg username "$REPO_OWNER" \
+            --arg avatar "$OWNER_ICON" \
             --arg author "$AUTHOR_NAME" \
-            --arg icon "$PUSHER_ICON" \
             --arg count "$COMMIT_COUNT" \
             --arg repo_name "$REPO_NAME" \
             --arg repo_url "$REPO_URL" \
             --arg id "$SHORT_SHA" \
             --arg msg "$LAST_COMMIT_MSG" \
             '{
+              username: $username,
+              avatar_url: $avatar,
               embeds: [{
                 color: 16777215,
                 author: {
                   name: $author,
-                  icon_url: $icon
+                  icon_url: $avatar
                 },
                 title: ("[" + $repo_name + "]: " + $count + " new commits"),
                 url: $repo_url,
@@ -49,5 +56,5 @@ jobs:
               }]
             }')
 
-          # 3. POST to Discord
+          # 4. POST to Discord
           curl -H "Content-Type: application/json" -X POST -d "$PAYLOAD" "$WEBHOOK_URL"
