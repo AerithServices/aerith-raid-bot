@@ -3,7 +3,7 @@ import discord
 import tomllib
 from discord import app_commands
 from discord.ext import commands
-from src.utils.helpers import log_command, success_embed
+from src.utils.helpers import log_command
 
 
 class DmCog(commands.Cog):

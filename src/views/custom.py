@@ -7,7 +7,7 @@ from src.utils.db import (
     delete_user_preset
 )
 
-from src.utils.helpers import Aerith_INVITE, success_embed
+from src.utils.helpers import Aerith_INVITE
 
 class PresetManagementView(discord.ui.LayoutView):
     def __init__(self, user_id: int):
