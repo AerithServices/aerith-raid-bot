@@ -5,9 +5,9 @@ import aiohttp
 import discord
 import tomllib
 
-from core.utils.helpers import ZNE_INVITE, send_message_http
-from core.utils.db import get_global_default_message
-from core.views.thug import load_gifs
+from src.utils.helpers import Aerith_INVITE, send_message_http
+from src.utils.db import get_global_default_message
+from src.views.thug import load_gifs
 
 _config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "config.toml")
 with open(_config_path, "rb") as f:

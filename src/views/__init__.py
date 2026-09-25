@@ -16,7 +16,6 @@ __all__ = [
     "SpamButton",
     "custom_spam_panel",
     "multiplespam_panel",
-    "filespam_panel",
     "PingPanel",
     "ThugView",
     "load_gifs",

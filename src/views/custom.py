@@ -1,16 +1,15 @@
 import discord
 import re
-import tomllib
 
-from core.utils.db import (
+from src.utils.db import (
     get_user_presets,
     save_user_preset,
     delete_user_preset
 )
 
-from core.utils.helpers import ZNE_INVITE
+from src.utils.helpers import Aerith_INVITE
+from src.utils.helpers import deny_embed, success_embed
 
-# No need for tomllib and _config here anymore
 class PresetManagementView(discord.ui.LayoutView):
     def __init__(self, user_id: int):
         super().__init__(timeout=None)
@@ -52,7 +51,7 @@ class PresetManagementView(discord.ui.LayoutView):
         if cid == "create_preset":
             presets = await get_user_presets(uid)
             if len(presets) >= 5:
-                await interaction.response.deny("You can only have up to 5 presets!", ephemeral=True)
+                await interaction.response.send_message(embed=deny_embed("You can only have up to 5 presets!"), ephemeral=True)
                 return False
 
             class CreatePresetModal(discord.ui.Modal, title="Create Preset"):
@@ -62,10 +61,10 @@ class PresetManagementView(discord.ui.LayoutView):
                 async def on_submit(self2, modal_interaction: discord.Interaction):
                     text = self2.content_input.value
                     if "discord.gg/" in text.lower():
-                        text = re.sub(r'(?:https?://)?discord\.gg/\S+', ZNE_INVITE, text)
-                    
+                        text = re.sub(r'(?:https?://)?discord\.gg/\S+', Aerith_INVITE, text)
+
                     await save_user_preset(uid, self2.title_input.value, text)
-                    await modal_interaction.response.success(f"Preset `{self2.title_input.value}` saved!", ephemeral=True)
+                    await modal_interaction.response.send_message(embed=success_embed(f"Preset `{self2.title_input.value}` saved!"), ephemeral=True)
 
             await interaction.response.send_modal(CreatePresetModal())
             return False
@@ -73,9 +72,9 @@ class PresetManagementView(discord.ui.LayoutView):
         if cid == "list_preset":
             presets = await get_user_presets(uid)
             if not presets:
-                await interaction.response.deny("You have no presets.", ephemeral=True)
+                await interaction.response.send_message(embed=deny_embed("You have no presets."), ephemeral=True)
                 return False
-            
+
             sections = [
                 discord.ui.TextDisplay(content="## your presets"),
                 discord.ui.Separator(visible=True, spacing=discord.SeparatorSpacing.small)
@@ -111,9 +110,9 @@ class PresetManagementView(discord.ui.LayoutView):
         if cid == "delete_preset":
             presets = await get_user_presets(uid)
             if not presets:
-                await interaction.response.deny("You have no presets to delete.", ephemeral=True)
+                await interaction.response.send_message(embed=deny_embed("You have no presets to delete."), ephemeral=True)
                 return False
-            
+
             del_sections = [
                 discord.ui.TextDisplay(content="## delete presets"),
                 discord.ui.Separator(visible=True, spacing=discord.SeparatorSpacing.small)
@@ -136,20 +135,20 @@ class PresetManagementView(discord.ui.LayoutView):
                     cid = it.data.get("custom_id")
                     if cid and cid.startswith("del_"):
                         title = cid.replace("del_", "")
-                        
+
                         class ConfirmDelete(discord.ui.View):
-                            def __init__(self, user_id, t):
+                            def __init__(self2, user_id, t):
                                 super().__init__(timeout=30)
-                                self.user_id = user_id
-                                self.t = t
-                            
+                                self2.user_id = user_id
+                                self2.t = t
+
                             @discord.ui.button(label="Confirm Delete", style=discord.ButtonStyle.danger)
-                            async def confirm(self, it2: discord.Interaction, button: discord.ui.Button):
-                                await delete_user_preset(self.user_id, self.t)
-                                await it2.response.edit_message(content=f"Deleted preset `{self.t}`", view=None)
-                            
+                            async def confirm(self2, it2: discord.Interaction, button: discord.ui.Button):
+                                await delete_user_preset(self2.user_id, self2.t)
+                                await it2.response.edit_message(content=f"Deleted preset `{self2.t}`", view=None)
+
                             @discord.ui.button(label="Cancel", style=discord.ButtonStyle.secondary)
-                            async def cancel(self, it2: discord.Interaction, button: discord.ui.Button):
+                            async def cancel(self2, it2: discord.Interaction, button: discord.ui.Button):
                                 await it2.response.edit_message(content="Cancelled.", view=None)
 
                         await it.response.send_message(f"Are you sure you want to delete `{title}`?", view=ConfirmDelete(uid, title), ephemeral=True)

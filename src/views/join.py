@@ -8,7 +8,7 @@ with open(_config_path, "rb") as f:
 
 REQUIRED_SERVER_ID = _config.get("server", {}).get("main_server", _config.get("main_server", 0))
 VERIFIED_ROLE_ID = _config["server"]["verified_role_id"]
-ZNE_INVITE = _config.get("zne_invite", "https://discord.gg/4pQzcZxVXK")
+Aerith_INVITE = _config.get("zne_invite", "https://discord.gg/4pQzcZxVXK")
 
 FALLBACK_ICON = "https://zne.breed.rip/assets/zne.png"
 
@@ -30,7 +30,7 @@ def get_access_denied_view(bot: discord.ClientUser) -> discord.ui.LayoutView:
             discord.ui.Separator(visible=True, spacing=discord.SeparatorSpacing.small),
             discord.ui.ActionRow(
                     discord.ui.Button(
-                        url=ZNE_INVITE,
+                        url=Aerith_INVITE,
                         style=discord.ButtonStyle.link,
                         label="join",
                     ),

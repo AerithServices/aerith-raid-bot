@@ -9,8 +9,9 @@ from discord.ext import commands
 from PIL import Image, ImageDraw, ImageOps, ImageFont
 from datetime import datetime
 
-from core.utils.helpers import log_command
-from core.views import FakeNitroView, fake_giveaway
+from src.utils.helpers import log_command
+from src.utils.helpers import deny_embed
+from src.views import FakeNitroView, fake_giveaway
 
 
 class FakeCog(commands.Cog):
@@ -74,11 +75,10 @@ class FakeCog(commands.Cog):
     async def fake_message(self, interaction: discord.Interaction, user_id: str, message: str):
         await interaction.response.defer(ephemeral=True, thinking=True)
 
-        # Fetch user from the ID
         try:
             user = await self.bot.fetch_user(int(user_id))
         except (ValueError, discord.NotFound):
-            await interaction.followup.deny("Invalid user ID", ephemeral=True)
+            await interaction.followup.send(embed=deny_embed("Invalid user ID"), ephemeral=True)
             return
 
         username = user.display_name
@@ -103,8 +103,7 @@ class FakeCog(commands.Cog):
         font_timestamp = ImageFont.truetype("utils/font_regular.ttf", 12)
 
         img.paste(avatar, (20, 20), avatar)
-        
-        # Generate random time today
+
         now = datetime.now()
         random_hour = random.randint(0, now.hour)
         random_minute = random.randint(0, 59)
@@ -133,7 +132,7 @@ class FakeCog(commands.Cog):
             container1 = discord.ui.Container(
                 discord.ui.TextDisplay(content=f"Banning {user.mention}..."),
             )
-        
+
         ban_msg = await interaction.followup.send(view=BanningView(), ephemeral=False)
 
         await asyncio.sleep(2)
@@ -141,7 +140,7 @@ class FakeCog(commands.Cog):
             container1 = discord.ui.Container(
                 discord.ui.TextDisplay(content=f"Successfully banned {user.mention}\nReason: {reason}"),
             )
-        
+
         await ban_msg.edit(view=BannedView())
         await log_command(interaction, "fakeban", f"simulated ban for {user.id} with reason: {reason}")
 

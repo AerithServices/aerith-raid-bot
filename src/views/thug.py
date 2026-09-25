@@ -3,7 +3,8 @@ import asyncio
 import random
 import aiohttp
 import discord
-from core.utils.helpers import send_message_http, ZNE_INVITE
+from src.utils.helpers import send_message_http, Aerith_INVITE
+from src.utils.helpers import deny_embed
 
 def load_gifs() -> list[str]:
     try:
@@ -37,7 +38,7 @@ class ThugView(discord.ui.LayoutView):
             gifs = load_gifs()
             if len(gifs) < 3:
 
-                await interaction.followup.deny("could not load gifs from gifs.txt, it has less than 3 gifs!", ephemeral=True)
+                await interaction.followup.send(embed=deny_embed("could not load gifs from gifs.txt, it has less than 3 gifs!"), ephemeral=True)
                 return False
 
             app_id = interaction.client.application_id

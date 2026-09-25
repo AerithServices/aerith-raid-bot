@@ -4,7 +4,8 @@ import aiohttp
 import discord
 import random
 
-from core.utils.helpers import send_message_http
+from src.utils.helpers import send_message_http
+from src.utils.helpers import deny_embed
 
 
 def load_insults() -> list[str]:
@@ -39,7 +40,7 @@ def insult_panel(user: discord.User, delay: int = 0):
 
                 insults = load_insults()
                 if len(insults) < 5:
-                    await interaction.followup.deny("insults.txt must contain at least 5 insults!", ephemeral=True)
+                    await interaction.followup.send(embed=deny_embed("insults.txt must contain at least 5 insults!"), ephemeral=True)
                     return False
 
                 app_id = interaction.client.application_id

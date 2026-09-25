@@ -3,20 +3,21 @@ import re
 from discord import app_commands
 from discord.ext import commands
 
-from core.utils.db import (
+from src.utils.db import (
     set_global_default_message,
     delete_global_default_message,
     set_server_blacklist,
     set_user_blacklist,
 )
-from core.utils.helpers import log_command, ZNE_INVITE
-from core.utils.checks import is_owner
+from src.utils.helpers import log_command, Aerith_INVITE
+from src.utils.checks import is_owner
+from src.utils.helpers import deny_embed, success_embed
 
 
 class OwnerCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.cogs_list = ["commands.raid", "commands.owner", "commands.ghost", "commands.fake", "commands.dm", "commands.ad", "commands.other"]
+        self.cogs_list = ["src.commands.raid", "src.commands.owner", "src.commands.ghost", "src.commands.fake", "src.commands.dm", "src.commands.ad", "src.commands.other"]
 
     @app_commands.command(name="x-admin", description="Admin tools for bot management")
     @app_commands.check(is_owner)
@@ -25,7 +26,7 @@ class OwnerCog(commands.Cog):
         await interaction.response.send_message(view=Components(self.bot, self.cogs_list), ephemeral=True)
 
 
-class Components(discord.ui.LayoutView):    
+class Components(discord.ui.LayoutView):
     def __init__(self, bot, cogs_list):
         super().__init__(timeout=None)
         self.bot = bot
@@ -67,7 +68,7 @@ class Components(discord.ui.LayoutView):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         cid = interaction.data.get("custom_id")
-        
+
         if cid == "setmessage":
             class SetGlobalMessageModal(discord.ui.Modal, title="Set Global Default Message"):
                 message_input = discord.ui.TextInput(
@@ -78,12 +79,12 @@ class Components(discord.ui.LayoutView):
 
                 async def on_submit(self2, modal_interaction: discord.Interaction):
                     text = self2.message_input.value
-                    text = text.replace("{invite}", ZNE_INVITE)
+                    text = text.replace("{invite}", Aerith_INVITE)
                     if "discord.gg/" in text.lower():
-                        text = re.sub(r'(?:https?://)?discord\.gg/\S+', ZNE_INVITE, text)
-                    
+                        text = re.sub(r'(?:https?://)?discord\.gg/\S+', Aerith_INVITE, text)
+
                     await set_global_default_message(text)
-                    await modal_interaction.response.success("Global message set!", ephemeral=True)
+                    await modal_interaction.response.send_message(embed=success_embed("Global message set!"), ephemeral=True)
                     await log_command(interaction, "x-admin", f"Updated global message")
 
             await interaction.response.send_modal(SetGlobalMessageModal())
@@ -91,7 +92,7 @@ class Components(discord.ui.LayoutView):
 
         elif cid == "removeglobalmessage":
             await delete_global_default_message()
-            await interaction.response.success("Global message removed!", ephemeral=True)
+            await interaction.response.send_message(embed=success_embed("Global message removed!"), ephemeral=True)
             await log_command(interaction, "x-admin", "Removed global message")
             return False
 
@@ -110,7 +111,7 @@ class Components(discord.ui.LayoutView):
                     await it.response.defer(ephemeral=True)
                     selection = self2.values[0]
                     reloaded, failed = [], []
-                    
+
                     to_reload = self2.cogs_list if selection == "all" else [selection]
                     for cog in to_reload:
                         try:
@@ -118,7 +119,7 @@ class Components(discord.ui.LayoutView):
                             reloaded.append(cog)
                         except Exception as e:
                             failed.append(f"{cog}: {e}")
-                    
+
                     msg = f"Reloaded: {', '.join(reloaded)}"
                     if failed: msg += f"\nFailed: {', '.join(failed)}"
                     await it.edit_original_response(content=msg, view=None)
@@ -137,17 +138,16 @@ class Components(discord.ui.LayoutView):
                 action = discord.ui.TextInput(label="Action", placeholder="blacklist / unblacklist")
 
                 async def on_submit(self2, it: discord.Interaction):
-                    # Strip non-digits (handles accidental spaces or mentions)
                     val = re.sub(r'\D', '', self2.id_input.value)
                     if not val:
-                        return await it.response.deny("Invalid Server ID.", ephemeral=True)
+                        return await it.response.send_message(embed=deny_embed("Invalid Server ID."), ephemeral=True)
 
                     is_blacklisting = self2.action.value.lower() == "blacklist"
                     await set_server_blacklist(val, is_blacklisting)
                     status = "blacklisted" if is_blacklisting else "unblacklisted"
-                    await it.response.success(f"Server `{val}` {status}!", ephemeral=True)
+                    await it.response.send_message(embed=success_embed(f"Server `{val}` {status}!"), ephemeral=True)
                     await log_command(it, "x-admin", f"{status} server {val}")
-            
+
             await interaction.response.send_modal(BlacklistServerModal())
             return False
 
@@ -157,17 +157,16 @@ class Components(discord.ui.LayoutView):
                 action = discord.ui.TextInput(label="Action", placeholder="blacklist / unblacklist")
 
                 async def on_submit(self2, it: discord.Interaction):
-                    # Strip non-digits (handles accidental spaces or mentions)
                     val = re.sub(r'\D', '', self2.id_input.value)
                     if not val:
-                        return await it.response.deny("Invalid User ID.", ephemeral=True)
+                        return await it.response.send_message(embed=deny_embed("Invalid User ID."), ephemeral=True)
 
                     is_blacklisting = self2.action.value.lower() == "blacklist"
                     await set_user_blacklist(val, is_blacklisting)
                     status = "blacklisted" if is_blacklisting else "unblacklisted"
-                    await it.response.success(f"User `{val}` {status}!", ephemeral=True)
+                    await it.response.send_message(embed=success_embed(f"User `{val}` {status}!"), ephemeral=True)
                     await log_command(it, "x-admin", f"{status} user {val}")
-            
+
             await interaction.response.send_modal(BlacklistUserModal())
             return False
 

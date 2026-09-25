@@ -3,16 +3,14 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from core.utils.helpers import log_command, OWNER_IDS
+from src.utils.helpers import log_command, OWNER_IDS, deny_embed, success_embed
 
-# fallback image used when the server has no icon
 FALLBACK_ICON = "https://cdn.discordapp.com/embed/avatars/0.png"
 
 INVITE_REGEX = re.compile(r"(?:https?:\/\/)?(?:www\.|ptb\.|canary\.)?discord(?:app)?\.(?:(?:com|gg)[/\\]+(?:invite|servers)[/\\]+[a-z0-9-_]+)|(?:https?://)?(?:www\.)?(?:dsc\.gg|invite\.gg+|discord\.link|(?:discord\.(?:gg|io|me|li|id))|disboard\.org)[/\\]+[a-z0-9-_/]+")
 
 
 def _extract_invite_code(raw: str) -> str | None:
-    """Pull the invite code out of a full url or a bare code."""
     if not raw:
         return None
     raw = raw.strip()
@@ -26,7 +24,6 @@ def _extract_invite_code(raw: str) -> str | None:
 
 
 async def _fetch_invite(code: str) -> dict | None:
-    """Hit the discord invite api and return the payload (or None on failure)."""
     url = f"https://discord.com/api/v10/invites/{code}?with_counts=true"
     try:
         async with aiohttp.ClientSession() as session:
@@ -88,12 +85,12 @@ class SuggestModal(discord.ui.Modal, title="Suggest a Ra1d"):
 
         code = _extract_invite_code(self.server_invite.value)
         if not code:
-            await interaction.followup.deny("that doesn't look like a valid invite.", ephemeral=True)
+            await interaction.followup.send(embed=deny_embed("that doesn't look like a valid invite."), ephemeral=True)
             return
 
         data = await _fetch_invite(code)
         if not data or "guild" not in data:
-            await interaction.followup.deny("couldn't fetch that server, is the invite valid?", ephemeral=True)
+            await interaction.followup.send(embed=deny_embed("couldn't fetch that server, is the invite valid?"), ephemeral=True)
             return
 
         guild = data.get("guild", {})
@@ -118,10 +115,10 @@ class SuggestModal(discord.ui.Modal, title="Suggest a Ra1d"):
         try:
             await interaction.channel.send(view=view)
         except Exception:
-            await interaction.followup.deny("i couldn't send the suggestion in this channel.", ephemeral=True)
+            await interaction.followup.send(embed=deny_embed("i couldn't send the suggestion in this channel."), ephemeral=True)
             return
 
-        await interaction.followup.success("your suggestion has been sent!", ephemeral=True)
+        await interaction.followup.send(embed=success_embed("your suggestion has been sent!"), ephemeral=True)
 
         who = "anonymously" if is_anonymous else "publicly"
         await log_command(interaction, "suggest", f"suggested a ra1d on {server_name} ({who})")
@@ -159,7 +156,6 @@ class SuggestionCog(commands.Cog):
         self.bot = bot
 
     async def cog_load(self):
-        # register the persistent view so the button keeps working after restarts
         self.bot.add_view(SuggestPanel())
 
     @commands.command(name="suggestsend")
@@ -167,7 +163,7 @@ class SuggestionCog(commands.Cog):
         if ctx.author.id not in OWNER_IDS:
             print(f"User {ctx.author} ({ctx.author.id}) tried to use suggestsend but is not an owner.")
             return
-        
+
         await ctx.send(view=SuggestPanel())
 
 

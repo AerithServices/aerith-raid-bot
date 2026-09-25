@@ -6,9 +6,9 @@ import aiohttp
 import discord
 import tomllib
 
-from core.utils.helpers import ZNE_INVITE
-from core.utils.db import get_global_default_message
-from core.utils.helpers import send_message_http
+from src.utils.helpers import Aerith_INVITE
+from src.utils.db import get_global_default_message
+from src.utils.helpers import send_message_http
 
 _config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "config.toml")
 with open(_config_path, "rb") as f:
@@ -23,7 +23,7 @@ class SpamButton(discord.ui.LayoutView):
         self.preset_content = preset_content
 
     container1 = discord.ui.Container(
-        discord.ui.TextDisplay(content=f"# PRESS BUTTON TO START SPAM!\n-# zne is open source so it would be really appreciated if you could star the [github repo](https://github.com/ZNE-Opensource-Project/zne-raid-bot)"),
+        discord.ui.TextDisplay(content=f"# PRESS BUTTON TO START SPAM!\n-# zne is open source so it would be really appreciated if you could star the [github repo](https://github.com/Aerith-Opensource-Project/zne-raid-bot)"),
         discord.ui.ActionRow(
                 discord.ui.Button(
                     style=discord.ButtonStyle.secondary,

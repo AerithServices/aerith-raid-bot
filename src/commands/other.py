@@ -2,7 +2,7 @@ import discord
 import base64
 from discord import app_commands
 from discord.ext import commands
-from core.utils.helpers import log_command
+from src.utils.helpers import log_command
 
 class OtherCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -14,7 +14,7 @@ class OtherCog(commands.Cog):
     async def userinfo(self, interaction: discord.Interaction, user: discord.User = None):
         await interaction.response.defer(ephemeral=True)
         target = user or interaction.user
-        
+
         try:
             full_user = await self.bot.fetch_user(target.id)
         except:
@@ -22,7 +22,7 @@ class OtherCog(commands.Cog):
 
         display_name = full_user.display_name
         join_ts = f"<t:{int(full_user.created_at.timestamp())}:R>"
-        
+
         serv_ts = "not in server"
         if interaction.guild:
             member = interaction.guild.get_member(full_user.id)
@@ -33,7 +33,7 @@ class OtherCog(commands.Cog):
         bot_status = "YES" if full_user.bot else "NO"
         usericon = full_user.display_avatar.url
 
-        class UserInfo(discord.ui.LayoutView):    
+        class UserInfo(discord.ui.LayoutView):
             container1 = discord.ui.Container(
                 discord.ui.Section(
                     discord.ui.TextDisplay(content=f"# {display_name}\ndiscord join: {join_ts}\nserver join: {serv_ts}\nusername: `{full_user.name}`\nid: `{full_user.id}`\nfirst token segment: `{userid_into_base64}`\nbot?: {bot_status}"),
@@ -109,7 +109,7 @@ class OtherCog(commands.Cog):
             class Page1(discord.ui.LayoutView):
                 container1 = discord.ui.Container(
                     discord.ui.Section(
-                        discord.ui.TextDisplay(content="# `↯` ZNE Bot information\n### Links\n[website](https://zne.breed.rip/) • [leaderboard](https://zne.breed.rip/leaderboard) • [commands](https://zne.breed.rip/commands)\n[github](https://github.com/ZNE-Opensource-Project/zne-raid-bot) • [youtube](https://www.youtube.com/@78x2)"),
+                        discord.ui.TextDisplay(content="# `↯` Aerith Bot information\n### Links\n[website](https://zne.breed.rip/) • [leaderboard](https://zne.breed.rip/leaderboard) • [commands](https://zne.breed.rip/commands)\n[github](https://github.com/Aerith-Opensource-Project/zne-raid-bot) • [youtube](https://www.youtube.com/@78x2)"),
                         accessory=discord.ui.Thumbnail(
                             media="https://avatars.githubusercontent.com/u/295873404",
                         ),
@@ -175,7 +175,7 @@ class OtherCog(commands.Cog):
     async def permcheck(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
 
-        class Components(discord.ui.LayoutView):    
+        class Components(discord.ui.LayoutView):
             container1 = discord.ui.Container(
                 discord.ui.TextDisplay(content="**check if server is raidable or not**\nthis checks if the bot can send public messages which shows if a server is raidable"),
                 discord.ui.ActionRow(
@@ -193,7 +193,7 @@ class OtherCog(commands.Cog):
                     await it.response.defer(ephemeral=True)
                     status_text = "not raidable"
 
-                  
+
                     try:
                         msg = await it.channel.send("\u200c")
                         status_text = "yes its raidable"
@@ -206,14 +206,14 @@ class OtherCog(commands.Cog):
                                 status_text = "not raidable"
                             else:
                                 status_text = "yes its raidable"
-                            
+
                             try: await msg.delete()
                             except: pass
                         except:
                             pass
                     except Exception:
                         pass
-                    
+
                     class ResultView(discord.ui.LayoutView):
                         container1 = discord.ui.Container(
                             discord.ui.TextDisplay(content=f"**check if server is raidable or not**\n\nresult: **{status_text}**"),

@@ -1,9 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands, AllowedMentions
-from core.utils.helpers import (
-    ZNE_INVITE
-)
+from src.utils.helpers import Aerith_INVITE
 
 class Panel(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -16,12 +14,12 @@ class Panel(commands.Cog):
         await interaction.response.defer(ephemeral=True, thinking=True)
 
         class Components(discord.ui.LayoutView):
-            discord.ui.TextDisplay(content=f"{ZNE_INVITE} {'@everyone ' if not noping else ''}"),
-            
+            discord.ui.TextDisplay(content=f"{Aerith_INVITE} {'@everyone ' if not noping else ''}"),
+
             container1 = discord.ui.Container(
-                discord.ui.TextDisplay(content="# __WELCOME TO ZNE__\n**STOP PAYING FOR GARBAGE BOTS THAT BARELY HAVE ANY FEATURES**\nZNE is a 100% free discord raid bot, no premium shenanigans, no hidden paywalls\nZNE has been free for a *YEAR* now (made in april 2025)"),
+                discord.ui.TextDisplay(content="# __WELCOME TO Aerith__\n**STOP PAYING FOR GARBAGE BOTS THAT BARELY HAVE ANY FEATURES**\nAerith is a 100% free discord raid bot, no premium shenanigans, no hidden paywalls\nAerith has been free for a *YEAR* now (made in april 2025)"),
                 discord.ui.Separator(visible=True, spacing=discord.SeparatorSpacing.small),
-                discord.ui.TextDisplay(content="## `❓` What does ZNE offer?\n> Blazing fast discord raider bots\n> Nuke bots that will **100%** crash your phone\n> Easy-to use Webhook spammers\n> Weekly Giveaways!"),
+                discord.ui.TextDisplay(content="## `❓` What does Aerith offer?\n> Blazing fast discord raider bots\n> Nuke bots that will **100%** crash your phone\n> Easy-to use Webhook spammers\n> Weekly Giveaways!"),
                 discord.ui.Separator(visible=True, spacing=discord.SeparatorSpacing.small),
                 discord.ui.MediaGallery(
                     discord.MediaGalleryItem(
@@ -30,7 +28,7 @@ class Panel(commands.Cog):
                 ),
                 discord.ui.ActionRow(
                     discord.ui.Button(
-                        url=ZNE_INVITE,
+                        url=Aerith_INVITE,
                         style=discord.ButtonStyle.link,
                         label="join",
                     ),

@@ -3,14 +3,14 @@ import tomllib
 import logging
 import aiohttp
 from discord.ext import commands
-from core.utils.leaderboard import load_leaderboard
+from src.utils.leaderboard import load_leaderboard
 
 with open("config.toml", "rb") as f:
     _config = tomllib.load(f)
 
 OWNER_IDS = [int(uid) for uid in _config.get("owner_ids", [])]
 LOG_CHANNEL_ID = _config["channels"]["log_channel_id"]
-ZNE_INVITE = _config.get("zne_invite", "https://discord.gg/4pQzcZxVXK")
+Aerith_INVITE = _config.get("zne_invite", "https://discord.gg/4pQzcZxVXK")
 
 
 user_farm_tokens: dict[int, list[str]] = {}
@@ -162,10 +162,33 @@ async def post_leaderboard_to_api(bot: commands.Bot):
 
 
 async def send_message_http(session: aiohttp.ClientSession, application_id: int, interaction_token: str, content: str):
-    """
-    Sends an HTTP message to a Discord webhook.
-    """
     url = f"https://discord.com/api/v10/webhooks/{application_id}/{interaction_token}"
     payload = {"content": content, "allowed_mentions": {"parse": ["everyone", "users", "roles"]}}
     async with session.post(url, json=payload) as resp:
         return resp.status
+
+
+DENY_COLOR = 12395813
+SUCCESS_COLOR = 5487909
+WARN_COLOR = 12107045
+
+DENY_EMOJI = "<:deny:1529732544189304923>"
+SUCCESS_EMOJI = "<:approve:1529732623273037895>"
+WARN_EMOJI = "<:warn:1529733126547308544>"
+
+
+def deny_embed(message: str) -> discord.Embed:
+    return discord.Embed(
+        description=f"{DENY_EMOJI} {message}",
+        color=DENY_COLOR)
+
+
+def success_embed(message: str) -> discord.Embed:
+    return discord.Embed(
+        description=f"{SUCCESS_EMOJI} {message}",
+        color=SUCCESS_COLOR)
+
+def warn_embed(message: str) -> discord.Embed:
+    return discord.Embed(
+        description=f"{WARN_EMOJI} {message}",
+        color=WARN_COLOR)

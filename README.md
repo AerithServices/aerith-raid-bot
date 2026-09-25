@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://avatars.githubusercontent.com/u/295873404?s=512" alt="ZNE Raid Bot" width="200" height="200">
+  <img src="https://avatars.githubusercontent.com/u/295873404?s=512" alt="Aerith Raid Bot" width="200" height="200">
 </p>
 
 <h1 align="center">Aerith Raid Bot</h1>
@@ -34,8 +34,8 @@
 
 ```bash
 # Clone the repo
-git clone https://github.com/AerithServices/aerith-raid-bot
-cd aerith-raid-bot
+git clone https://github.com/Aerith-Opensource-Project/zne-raid-bot.git
+cd AerithRaid
 
 # Create a virtual environment (standard venv)
 python -m venv .venv
@@ -62,7 +62,7 @@ cp config.example.toml config.toml
 copy config.example.toml config.toml
 ```
 
-> **Note:** The `[api]` section in `config.toml` is used for leaderboard syncing and command tracking. These features rely on the companion website. You do not need to configure `[api]` unless you are running your own instance of the [ZNE Website](https://github.com/ZNE-Opensource-Project/zne-website/).
+> **Note:** The `[api]` section in `config.toml` is used for leaderboard syncing and command tracking. These features rely on the companion website. You do not need to configure `[api]` unless you are running your own instance of the [Aerith Website](https://github.com/Aerith-Opensource-Project/zne-website/).
 
 Edit `config.toml`:
 

@@ -6,17 +6,17 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from core.utils.helpers import (
+from src.utils.helpers import (
     log_command,
-    ZNE_INVITE,
+    Aerith_INVITE,
 )
 
-from core.views import (
+from src.views import (
     SpamButton,
-    PingPanel, 
-    ThugView, 
-    custom_spam_panel, 
-    FakeNitroView, 
+    PingPanel,
+    ThugView,
+    custom_spam_panel,
+    FakeNitroView,
     PresetManagementView,
     insult_panel,
     InteractionRaidView,
@@ -24,7 +24,7 @@ from core.views import (
     multiplespam_panel,
     )
 
-from core.utils.db import get_user_presets, get_preset_by_title
+from src.utils.db import get_user_presets, get_preset_by_title
 
 
 class RaidCog(commands.Cog):
@@ -44,7 +44,7 @@ class RaidCog(commands.Cog):
     @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def ra1d(self, interaction: discord.Interaction, preset: str = None):
         await interaction.response.defer(ephemeral=True, thinking=True)
-        
+
         preset_content = None
         if preset:
             preset_content = await get_preset_by_title(str(interaction.user.id), preset)
@@ -95,7 +95,7 @@ class RaidCog(commands.Cog):
         expires_ts = int(time.time()) + 7 * 24 * 60 * 60
         avatar_url = user.display_avatar.url
 
-        class Blame(discord.ui.LayoutView):    
+        class Blame(discord.ui.LayoutView):
             container1 = discord.ui.Container(
                 discord.ui.Section(
                     discord.ui.TextDisplay(content=f"## `✅`  Raid Completed\n{user.mention} Your raid was completed!\n**Remember!** your trial is ending in <t:{expires_ts}:R>"),
@@ -104,7 +104,7 @@ class RaidCog(commands.Cog):
                     ),
                 ),
                 discord.ui.Separator(visible=True, spacing=discord.SeparatorSpacing.small),
-                discord.ui.TextDisplay(content=f"-# Join our [discord]({ZNE_INVITE}) to remove this message"),
+                discord.ui.TextDisplay(content=f"-# Join our [discord]({Aerith_INVITE}) to remove this message"),
                 accent_colour=discord.Colour(16777215),
             )
 
@@ -127,7 +127,7 @@ class RaidCog(commands.Cog):
         await interaction.response.defer(ephemeral=True, thinking=True)
 
         if "discord.gg/" in text.lower():
-            text = re.sub(r'(?:https?://)?discord\.gg/\S+', ZNE_INVITE, text)
+            text = re.sub(r'(?:https?://)?discord\.gg/\S+', Aerith_INVITE, text)
 
         await interaction.followup.send(view=custom_spam_panel(interaction.user.id, text), ephemeral=True)
         await log_command(interaction, "spam", f"user spammed: {text}")
@@ -158,7 +158,7 @@ class RaidCog(commands.Cog):
         messages = []
         for m in raw_messages:
             if m and "discord.gg/" in m.lower():
-                m = re.sub(r'(?:https?://)?discord\.gg/\S+', ZNE_INVITE, m)
+                m = re.sub(r'(?:https?://)?discord\.gg/\S+', Aerith_INVITE, m)
             if m:
                 messages.append(m)
 

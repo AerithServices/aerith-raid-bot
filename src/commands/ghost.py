@@ -2,8 +2,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from core.utils.helpers import log_command
-from core.views import PingPanel
+from src.utils.helpers import log_command
+from src.views import PingPanel
 
 
 class GhostCog(commands.Cog):
