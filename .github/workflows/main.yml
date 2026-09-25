@@ -1,0 +1,53 @@
+name: Discord Commit Logger
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send commit info to Discord
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 1. Basic Info
+          REPO_FULL=${{ github.repository }}
+          REPO_NAME=$(echo "$REPO_FULL" | cut -d'/' -f2)
+          REPO_URL="https://github.com/${{ github.repository }}"
+          COMMIT_COUNT=$(jq -r '.commits | length' "$GITHUB_EVENT_PATH")
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          LAST_COMMIT_MSG=$(jq -r '.commits[-1].message' "$GITHUB_EVENT_PATH" | head -n 1)
+          AUTHOR_NAME=$(jq -r '.commits[-1].author.name' "$GITHUB_EVENT_PATH")
+          PUSHER_ICON=$(jq -r '.sender.avatar_url' "$GITHUB_EVENT_PATH")
+
+          # 2. Construct Payload matching the new embed style
+          PAYLOAD=$(jq -n \
+            --arg author "$AUTHOR_NAME" \
+            --arg icon "$PUSHER_ICON" \
+            --arg count "$COMMIT_COUNT" \
+            --arg repo_name "$REPO_NAME" \
+            --arg repo_url "$REPO_URL" \
+            --arg id "$SHORT_SHA" \
+            --arg msg "$LAST_COMMIT_MSG" \
+            '{
+              embeds: [{
+                color: 16777215,
+                author: {
+                  name: $author,
+                  icon_url: $icon
+                },
+                title: ("[" + $repo_name + "]: " + $count + " new commits"),
+                url: $repo_url,
+                description: ("**\($author)** committed **\($count)** new commit(s) to **\($repo_name)**\n`\($id)` \($msg)"),
+                footer: {
+                  text: "Aerith Github Tracker"
+                }
+              }]
+            }')
+
+          # 3. POST to Discord
+          curl -H "Content-Type: application/json" -X POST -d "$PAYLOAD" "$WEBHOOK_URL"
