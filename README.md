@@ -2,7 +2,7 @@
   <img src="https://avatars.githubusercontent.com/u/295873404?s=512" alt="ZNE Raid Bot" width="200" height="200">
 </p>
 
-<h1 align="center">ZNE Raid Bot</h1>
+<h1 align="center">Aerith Raid Bot</h1>
 
 <p align="center">A powerful Discord bot built with discord.py for raiding, spamming, and managing servers.</p>
 
@@ -29,16 +29,15 @@
 ### Prerequisites
 
 - [Python 3.10+](https://www.python.org/)
-- [You're Brain](https://zne.breed.rip/)
 
 ### Setup
 
 ```bash
 # Clone the repo
-git clone https://github.com/ZNE-Opensource-Project/zne-raid-bot.git ZNE/Raid-Bot
-cd ZNE/Raid-Bot
+git clone https://github.com/AerithServices/aerith-raid-bot
+cd aerith-raid-bot
 
-# Create a virtual environment (standard venv)[OPTIONAL]
+# Create a virtual environment (standard venv)
 python -m venv .venv
 
 # On Windows (PowerShell)
