@@ -1,3 +1,4 @@
+# the bot has an aging codebase :pray:
 import asyncio
 import logging
 import os
