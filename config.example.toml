@@ -1,4 +1,4 @@
-TOKEN = "MTU1NDUyNDM0NTM2MjI4NDY2NA.Gvwoi7.4ClXvjZjNrfXJRojGmI3n3YLDtkqc4SJdS1jOU"
+TOKEN = ""
 
 owner_ids = []
 owner_blacklist_bypass = false

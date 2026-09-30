@@ -12,6 +12,7 @@ from discord import AllowedMentions
 from src.utils.checks import global_interaction_check
 from src.utils.db import init_db
 # from src.utils.helpers import post_commands_to_api, post_leaderboard_to_api
+from src.utils.helpers import verify_log_channel
 from src.utils.leaderboard import load_leaderboard, track_command
 from src.utils.logger import setup_logging
 
@@ -64,10 +65,6 @@ async def update_bot_status():
 #         await post_leaderboard_to_api(bot)
 #         await update_bot_status()
 #         await asyncio.sleep(5 * 60)
-
-# the loop above is still commented out, keep a name so on_ready can check for it
-leaderboard_sync_loop = None
-
 
 # @bot.event
 # async def on_interaction(interaction: discord.Interaction):
@@ -196,6 +193,10 @@ async def on_ready():
     except Exception:
         logger.error("failed to open the database, every db-backed command will fail", exc_info=True)
     logger.info(f"i am {bot.user}")
+    try:
+        await verify_log_channel(bot)
+    except Exception:
+        logger.error("could not verify the log channel", exc_info=True)
     for cog in discover_cogs():
         await load_cog(cog)
     try:
@@ -208,10 +209,6 @@ async def on_ready():
         await update_bot_status()
     except Exception:
         logger.error("failed to update presence", exc_info=True)
-    if leaderboard_sync_loop is not None and (
-        not getattr(bot, "_leaderboard_sync_task", None) or bot._leaderboard_sync_task.done()
-    ):
-        bot._leaderboard_sync_task = asyncio.create_task(leaderboard_sync_loop())
     invite_url = f"https://discord.com/api/oauth2/authorize?client_id={bot.user.id}&permissions=8&scope=bot"
     logger.info(f"Bot invite: {invite_url}")
 

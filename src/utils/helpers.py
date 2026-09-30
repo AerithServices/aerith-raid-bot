@@ -9,17 +9,21 @@ with open("config.toml", "rb") as f:
     _config = tomllib.load(f)
 
 OWNER_IDS = [int(uid) for uid in _config.get("owner_ids", [])]
-LOG_CHANNEL_ID = _config["channels"]["log_channel_id"]
+LOG_CHANNEL_ID = _config.get("channels", {}).get("log_channel_id", 0)
 Aerith_INVITE = _config.get("zne_invite", "https://discord.gg/4pQzcZxVXK")
-
 
 user_farm_tokens: dict[int, list[str]] = {}
 
-
 async def log_command(interaction: discord.Interaction, name: str, details: str):
+    """Best effort audit log, never raises so a broken log channel cannot fail a command."""
+    client = interaction.client
+    if client is None or not LOG_CHANNEL_ID:
+        return
+
+    channel = LOG_CHANNEL_ID
+
     user = interaction.user
     avatar_url = user.display_avatar.url
-    channel = interaction.client.get_channel(LOG_CHANNEL_ID)
 
     source_channel = interaction.channel
     if isinstance(source_channel, discord.Thread):
@@ -54,21 +58,21 @@ async def log_command(interaction: discord.Interaction, name: str, details: str)
     await channel.send(view=view, allowed_mentions=discord.AllowedMentions.none())
 
 
-API_CONFIG = _config.get("api", {})
-API_URL = API_CONFIG.get("url", "https://zne.breed.rip/api/commands")
-API_SECRET = API_CONFIG.get("secret", "")
+# API_CONFIG = _config.get("api", {})
+# API_URL = API_CONFIG.get("url", "https://zne.breed.rip/api/commands")
+# API_SECRET = API_CONFIG.get("secret", "")
 
 
-def _default_leaderboard_url() -> str:
-    if API_URL.endswith("/api/commands"):
-        return API_URL[:-len("/api/commands")] + "/api/leaderboard"
-    return API_URL.rstrip("/") + "/leaderboard"
+# def _default_leaderboard_url() -> str:
+#     if API_URL.endswith("/api/commands"):
+#         return API_URL[:-len("/api/commands")] + "/api/leaderboard"
+#     return API_URL.rstrip("/") + "/leaderboard"
 
 
-API_LEADERBOARD_URL = API_CONFIG.get("leaderboard_url", _default_leaderboard_url())
-API_LEADERBOARD_SECRET = API_CONFIG.get("leaderboard_secret", API_SECRET)
+# API_LEADERBOARD_URL = API_CONFIG.get("leaderboard_url", _default_leaderboard_url())
+# API_LEADERBOARD_SECRET = API_CONFIG.get("leaderboard_secret", API_SECRET)
 
-api_logger = logging.getLogger("zneraid.api")
+# api_logger = logging.getLogger("zneraid.api")
 
 
 # async def post_commands_to_api(bot: commands.Bot):
