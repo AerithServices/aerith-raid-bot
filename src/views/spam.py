@@ -23,7 +23,7 @@ class SpamButton(discord.ui.LayoutView):
         self.preset_content = preset_content
 
     container1 = discord.ui.Container(
-        discord.ui.TextDisplay(content=f"# PRESS BUTTON TO START SPAM!\n-# zne is open source so it would be really appreciated if you could star the [github repo](https://github.com/Aerith-Opensource-Project/zne-raid-bot)"),
+        discord.ui.TextDisplay(content=f"**press the button to start the spam**\n-# **[aerith](https://github.com/AerithServices/aerith-raid-bot) is opensource so we would appreciated if u gave us a star!**"),
         discord.ui.ActionRow(
                 discord.ui.Button(
                     style=discord.ButtonStyle.secondary,
@@ -64,17 +64,12 @@ def custom_spam_panel(user_id: int, message: str):
 
         preview = message if len(message) <= 60 else message[:60] + "..."
         container1 = discord.ui.Container(
-        discord.ui.TextDisplay(content=f"# PRESS BUTTON TO START SPAM!\n-# you are spamming the following message:\n```{preview}```"),
+        discord.ui.TextDisplay(content=f"**press the button to start the spam**!\n-# you are spamming the following message:\n```{preview}```"),
             discord.ui.ActionRow(
                     discord.ui.Button(
                         style=discord.ButtonStyle.secondary,
                         label="SPAM 5X",
                         custom_id="custom_spam_send_button",
-                    ),
-                    discord.ui.Button(
-                        style=discord.ButtonStyle.secondary,
-                        label="SPAM 6X",
-                        custom_id="custom_spam_send_button_6x",
                     ),
             ),
         accent_colour=discord.Colour(16777215),
@@ -95,25 +90,6 @@ def custom_spam_panel(user_id: int, message: str):
                     await asyncio.gather(*tasks)
 
                 return False
-
-            if interaction.data.get("custom_id") == "custom_spam_send_button_6x":
-                await interaction.response.defer()
-
-                await interaction.followup.send(self.custom_message, ephemeral=False, allowed_mentions=discord.AllowedMentions(everyone=True))
-
-                app_id = interaction.client.application_id
-                token = interaction.token
-
-                async with aiohttp.ClientSession() as session:
-                    tasks = [
-                        send_message_http(session, app_id, token, self.custom_message)
-                        for _ in range(5)
-                    ]
-                    await asyncio.gather(*tasks)
-
-                return False
-            return True
-
     return CustomSpamPanel()
 
 
@@ -126,17 +102,12 @@ def multiplespam_panel(messages: list[str]):
             self.messages = messages
 
         container1 = discord.ui.Container(
-            discord.ui.TextDisplay(content=f"# PRESS BUTTON TO START SPAM!\n-# you are spamming the following messages randomly:\n{display}"),
+            discord.ui.TextDisplay(content=f"# **press the button to start the spam**!\n-# you are spamming the following messages randomly:\n{display}"),
             discord.ui.ActionRow(
                 discord.ui.Button(
                     style=discord.ButtonStyle.secondary,
                     label="SPAM 5X",
                     custom_id="multi_spam_5x",
-                ),
-                discord.ui.Button(
-                    style=discord.ButtonStyle.secondary,
-                    label="SPAM 10X",
-                    custom_id="multi_spam_10x",
                 ),
             ),
             accent_colour=discord.Colour(16777215),
@@ -158,19 +129,5 @@ def multiplespam_panel(messages: list[str]):
                     await asyncio.gather(*tasks)
                 return False
 
-            if cid == "multi_spam_10x":
-                await interaction.response.defer()
-                app_id = interaction.client.application_id
-                token = interaction.token
-
-                async with aiohttp.ClientSession() as session:
-                    tasks = [
-                        send_message_http(session, app_id, token, random.choice(self.messages))
-                        for _ in range(10)
-                    ]
-                    await asyncio.gather(*tasks)
-                return False
-
             return True
-
     return MultipleSpamPanel()
