@@ -2,9 +2,6 @@
 # please dont uncomment the following, its full of bugs and sketch
 # - voby7
 
-
-
-
 import discord
 import re
 from discord import app_commands

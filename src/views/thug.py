@@ -4,6 +4,7 @@ import random
 import aiohttp
 import discord
 from src.utils.helpers import send_message_http, Aerith_INVITE
+from src.client import deny, approve
 
 
 def load_gifs() -> list[str]:
@@ -38,7 +39,7 @@ class ThugView(discord.ui.LayoutView):
             gifs = load_gifs()
             if len(gifs) < 3:
 
-                await interaction.followup.send("could not load gifs from gifs.txt, it has less than 3 gifs!", ephemeral=True)
+                await deny(interaction, "could not load gifs from gifs.txt, it has less than 3 gifs!")
                 return False
 
             app_id = interaction.client.application_id

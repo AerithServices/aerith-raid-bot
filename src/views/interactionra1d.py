@@ -248,7 +248,7 @@ def interaction_thug_view(original_message: discord.Message | None = None):
                 gifs = load_gifs()
                 if len(gifs) < 3:
                     await interaction.followup.send(
-                        "could not load gifs from gifs.txt, it has less than 3 gifs!",
+                        view=single_farm_panel_thug(self.original_message),
                         ephemeral=True,
                     )
                     return False
@@ -271,10 +271,10 @@ def interaction_thug_view(original_message: discord.Message | None = None):
                     new_view = interaction_thug_view(self.original_message)
                     await self.original_message.edit(view=new_view)
 
-                await interaction.followup.send(
-                    f"Thugged {send_count} times!",
-                    ephemeral=True,
-                )
+                    await interaction.followup.send(
+                        "could not load gifs from gifs.txt, it has less than 3 gifs!",
+                        ephemeral=True,
+                    )
                 return False
 
             return True

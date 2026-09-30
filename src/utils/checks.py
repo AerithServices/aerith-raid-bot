@@ -2,6 +2,7 @@ import discord
 import tomllib
 from discord import app_commands
 from src.utils.db import is_server_blacklisted, is_user_blacklisted
+from src.client import deny, approve
 
 
 with open("config.toml", "rb") as f:
@@ -26,13 +27,13 @@ async def global_interaction_check(interaction: discord.Interaction) -> bool:
         return True
 
     if await is_user_blacklisted(str(user_id)):
-        await interaction.response.send_message("You are blacklisted from using the bot.", ephemeral=True)
+        await deny(interaction, "You are blacklisted from using the bot.")
         return False
 
     guild_id = interaction.guild_id
 
     if guild_id and await is_server_blacklisted(str(guild_id)):
-        await interaction.response.send_message("This server is blacklisted.", ephemeral=True)
+        await deny(interaction, "This server is blacklisted.")
         return False
 
     if interaction.type != discord.InteractionType.application_command:
@@ -45,25 +46,25 @@ async def global_interaction_check(interaction: discord.Interaction) -> bool:
         return True
 
     if MAIN_SERVER_ID and guild_id is not None and int(guild_id) == MAIN_SERVER_ID:
-        await interaction.response.send_message("u can't raid this server lil bro 😂✌🏿", ephemeral=True)
+        await deny(interaction, "u can't raid this server lil bro 😂✌🏿")
         return False
 
     guild = interaction.client.get_guild(REQUIRED_SERVER_ID)
     if guild is None:
         from src.views.join import get_access_denied_view
-        await interaction.response.send_message(ephemeral=True, view=get_access_denied_view(interaction.client.user))
+        await deny(interaction, "", ephemeral=True, view=get_access_denied_view(interaction.client.user))
         return False
 
     member = guild.get_member(user_id)
     if member is None:
         from src.views.join import get_access_denied_view
-        await interaction.response.send_message(ephemeral=True, view=get_access_denied_view(interaction.client.user))
+        await deny(interaction, "", ephemeral=True, view=get_access_denied_view(interaction.client.user))
         return False
 
     role = guild.get_role(VERIFIED_ROLE_ID)
     if role is None or role not in member.roles:
         from src.views.join import get_access_denied_view
-        await interaction.response.send_message(ephemeral=True, view=get_access_denied_view(interaction.client.user))
+        await deny(interaction, "", ephemeral=True, view=get_access_denied_view(interaction.client.user))
         return False
 
     return True

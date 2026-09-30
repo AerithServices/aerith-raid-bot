@@ -17,23 +17,37 @@ user_farm_tokens: dict[int, list[str]] = {}
 
 
 async def log_command(interaction: discord.Interaction, name: str, details: str):
-    username = interaction.user.name
-    user_mention = f"<@{interaction.user.id}>"
-    avatar_url = interaction.user.display_avatar.url
+    user = interaction.user
+    avatar_url = user.display_avatar.url
     channel = interaction.client.get_channel(LOG_CHANNEL_ID)
+
+    source_channel = interaction.channel
+    if isinstance(source_channel, discord.Thread):
+        source_channel = source_channel.parent
+    if source_channel is None:
+        channel_name, channel_link = "direct message", "direct message"
+    else:
+        channel_name = getattr(source_channel, "name", None) or "direct message"
+        channel_link = getattr(source_channel, "mention", None) or channel_name
+
+    content = (
+        f"**Command executed by {user.display_name}**"
+        f"\n-# **executor**: {user.name} (`{user.id}`)"
+        f"\n-# **command**: `{name}`"
+        f"\n-# **channel**: {channel_name} ({channel_link})"
+    )
 
     class Components(discord.ui.LayoutView):
         container1 = discord.ui.Container(
             discord.ui.Section(
-                discord.ui.TextDisplay(
-                    content=f"# COMMAND USED\n\nuser: `{username}` ({user_mention})\ncommand `{name}`"
-                ),
+                discord.ui.TextDisplay(content=content),
                 accessory=discord.ui.Thumbnail(
-                    media=avatar_url
+                    media=avatar_url,
                 ),
             ),
             discord.ui.Separator(visible=True, spacing=discord.SeparatorSpacing.small),
-            discord.ui.TextDisplay(content=f"details:\n```{details}```"),
+            discord.ui.TextDisplay(content=f"**details** \n```{details}```"),
+            accent_colour=discord.Colour(16777215),
         )
 
     view = Components()
@@ -57,108 +71,108 @@ API_LEADERBOARD_SECRET = API_CONFIG.get("leaderboard_secret", API_SECRET)
 api_logger = logging.getLogger("zneraid.api")
 
 
-async def post_commands_to_api(bot: commands.Bot):
-    if not API_SECRET:
-        api_logger.info("Skipping web command update (api.secret not configured)")
-        return
+# async def post_commands_to_api(bot: commands.Bot):
+#     if not API_SECRET:
+#         api_logger.info("Skipping web command update (api.secret not configured)")
+#         return
 
-    commands_list = []
-    for cmd in bot.tree.get_commands():
-        if hasattr(cmd, "name") and hasattr(cmd, "description"):
-            if cmd.binding:
-                cat = getattr(cmd.binding, "qualified_name", cmd.binding.__class__.__name__)
+#     commands_list = []
+#     for cmd in bot.tree.get_commands():
+#         if hasattr(cmd, "name") and hasattr(cmd, "description"):
+#             if cmd.binding:
+#                 cat = getattr(cmd.binding, "qualified_name", cmd.binding.__class__.__name__)
 
-                if cat.endswith("Cog"):
-                    cat = cat[:-3]
-            else:
-                cat = "Other"
+#                 if cat.endswith("Cog"):
+#                     cat = cat[:-3]
+#             else:
+#                 cat = "Other"
 
-            arguments = []
-            if hasattr(cmd, "parameters") and cmd.parameters:
-                for param in cmd.parameters:
-                    desc = getattr(param, "_describe", None) or getattr(param, "description", None) or ""
-                    default = getattr(param, "default", None)
-                    required = default is None
+#             arguments = []
+#             if hasattr(cmd, "parameters") and cmd.parameters:
+#                 for param in cmd.parameters:
+#                     desc = getattr(param, "_describe", None) or getattr(param, "description", None) or ""
+#                     default = getattr(param, "default", None)
+#                     required = default is None
 
-                    arguments.append({
-                        "name": param.name,
-                        "description": desc,
-                        "required": required
-                    })
+#                     arguments.append({
+#                         "name": param.name,
+#                         "description": desc,
+#                         "required": required
+#                     })
 
-            commands_list.append({
-                "name": cmd.name,
-                "description": cmd.description or "No description.",
-                "category": cat,
-                "arguments": arguments
-            })
+#             commands_list.append({
+#                 "name": cmd.name,
+#                 "description": cmd.description or "No description.",
+#                 "category": cat,
+#                 "arguments": arguments
+#             })
 
-    if not commands_list:
-        return
+#     if not commands_list:
+#         return
 
-    payload = {
-        "commands": commands_list,
-        "secret": API_SECRET
-    }
+#     payload = {
+#         "commands": commands_list,
+#         "secret": API_SECRET
+#     }
 
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(API_URL, json=payload, timeout=aiohttp.ClientTimeout(total=15)) as resp:
-                if resp.status == 200:
-                    data = await resp.json()
-                    api_logger.info(f"Posted {data.get('count', len(commands_list))} commands to web API successfully")
-                else:
-                    text = await resp.text()
-                    api_logger.warning(f"Failed to post commands to API: HTTP {resp.status} - {text}")
-    except Exception as e:
-        api_logger.error(f"Error posting commands to API: {e}")
+#     try:
+#         async with aiohttp.ClientSession() as session:
+#             async with session.post(API_URL, json=payload, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+#                 if resp.status == 200:
+#                     data = await resp.json()
+#                     api_logger.info(f"Posted {data.get('count', len(commands_list))} commands to web API successfully")
+#                 else:
+#                     text = await resp.text()
+#                     api_logger.warning(f"Failed to post commands to API: HTTP {resp.status} - {text}")
+#     except Exception as e:
+#         api_logger.error(f"Error posting commands to API: {e}")
 
+# # unused now since theres no website yet..
+# async def post_leaderboard_to_api(bot: commands.Bot):
+#     if not API_LEADERBOARD_SECRET or not API_LEADERBOARD_URL:
+#         api_logger.info("Skipping web leaderboard update (api.leaderboard_secret or api.leaderboard_url not configured)")
+#         return
 
-async def post_leaderboard_to_api(bot: commands.Bot):
-    if not API_LEADERBOARD_SECRET or not API_LEADERBOARD_URL:
-        api_logger.info("Skipping web leaderboard update (api.leaderboard_secret or api.leaderboard_url not configured)")
-        return
+#     data, global_total = load_leaderboard()
+#     if not data:
+#         api_logger.info("Skipping web leaderboard update (leaderboard.json is empty)")
+#         return
 
-    data, global_total = load_leaderboard()
-    if not data:
-        api_logger.info("Skipping web leaderboard update (leaderboard.json is empty)")
-        return
+#     users = []
+#     ignored_keys = {"userid", "user_id", "id", "total_commands", "username", "display_name", "avatar_url"}
 
-    users = []
-    ignored_keys = {"userid", "user_id", "id", "total_commands", "username", "display_name", "avatar_url"}
+#     for user_id, entry in sorted(data.items(), key=lambda item: int(item[1].get("total_commands", 0)), reverse=True):
+#         total_commands = int(entry.get("total_commands", 0))
+#         command_counts = {
+#             str(name): int(count)
+#             for name, count in entry.items()
+#             if name not in ignored_keys and int(count) > 0
+#         }
 
-    for user_id, entry in sorted(data.items(), key=lambda item: int(item[1].get("total_commands", 0)), reverse=True):
-        total_commands = int(entry.get("total_commands", 0))
-        command_counts = {
-            str(name): int(count)
-            for name, count in entry.items()
-            if name not in ignored_keys and int(count) > 0
-        }
+#         users.append({
+#             "userid": str(user_id),
+#             "total_commands": total_commands,
+#             "commands": command_counts,
+#             "display_name": entry.get("display_name"),
+#             "avatar_url": entry.get("avatar_url"),
+#         })
 
-        users.append({
-            "userid": str(user_id),
-            "total_commands": total_commands,
-            "commands": command_counts,
-            "display_name": entry.get("display_name"),
-            "avatar_url": entry.get("avatar_url"),
-        })
+#     payload = {
+#         "global_total_commands": global_total,
+#         "users": users,
+#         "secret": API_LEADERBOARD_SECRET,
+#     }
 
-    payload = {
-        "global_total_commands": global_total,
-        "users": users,
-        "secret": API_LEADERBOARD_SECRET,
-    }
-
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(API_LEADERBOARD_URL, json=payload, timeout=aiohttp.ClientTimeout(total=15)) as resp:
-                if resp.status == 200:
-                    api_logger.info(f"Posted leaderboard for {len(users)} users to web API successfully")
-                else:
-                    text = await resp.text()
-                    api_logger.warning(f"Failed to post leaderboard to API: HTTP {resp.status} - {text}")
-    except Exception as e:
-        api_logger.error(f"Error posting leaderboard to API: {e}")
+#     try:
+#         async with aiohttp.ClientSession() as session:
+#             async with session.post(API_LEADERBOARD_URL, json=payload, timeout=aiohttp.ClientTimeout(total=15)) as resp:
+#                 if resp.status == 200:
+#                     api_logger.info(f"Posted leaderboard for {len(users)} users to web API successfully")
+#                 else:
+#                     text = await resp.text()
+#                     api_logger.warning(f"Failed to post leaderboard to API: HTTP {resp.status} - {text}")
+#     except Exception as e:
+#         api_logger.error(f"Error posting leaderboard to API: {e}")
 
 
 async def send_message_http(session: aiohttp.ClientSession, application_id: int, interaction_token: str, content: str):

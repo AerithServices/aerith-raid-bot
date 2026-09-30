@@ -1,4 +1,4 @@
-TOKEN = ""
+TOKEN = "MTU1NDUyNDM0NTM2MjI4NDY2NA.Gvwoi7.4ClXvjZjNrfXJRojGmI3n3YLDtkqc4SJdS1jOU"
 
 owner_ids = []
 owner_blacklist_bypass = false
@@ -25,3 +25,12 @@ https://discord.gg/4pQzcZxVXK
 [api]
 url = ""
 secret = ""
+
+[logging]
+# debug = true turns on discord.py + asyncio debug logs (slow callbacks, command dispatch)
+debug = false
+level = "INFO"
+# optional, mirrors everything into a file so tracebacks survive a closed console
+# file = "logs/bot.log"
+# when a command crashes, actually notify owner_ids instead of only rendering the mention
+ping_owners_on_error = false

@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 
 from src.utils.helpers import log_command, OWNER_IDS
+from src.client import deny, approve
 
 FALLBACK_ICON = "https://cdn.discordapp.com/embed/avatars/0.png"
 
@@ -85,12 +86,12 @@ class SuggestModal(discord.ui.Modal, title="Suggest a Ra1d"):
 
         code = _extract_invite_code(self.server_invite.value)
         if not code:
-            await interaction.followup.send("that doesn't look like a valid invite.", ephemeral=True)
+            await deny(interaction, "that doesn't look like a valid invite.")
             return
 
         data = await _fetch_invite(code)
         if not data or "guild" not in data:
-            await interaction.followup.send("couldn't fetch that server, is the invite valid?", ephemeral=True)
+            await deny(interaction, "couldn't fetch that server, is the invite valid?")
             return
 
         guild = data.get("guild", {})
@@ -115,10 +116,10 @@ class SuggestModal(discord.ui.Modal, title="Suggest a Ra1d"):
         try:
             await interaction.channel.send(view=view)
         except Exception:
-            await interaction.followup.send("i couldn't send the suggestion in this channel.", ephemeral=True)
+            await deny(interaction, "i couldn't send the suggestion in this channel.")
             return
 
-        await interaction.followup.send("your suggestion has been sent!", ephemeral=True)
+        await approve(interaction, "your suggestion has been sent!")
 
         who = "anonymously" if is_anonymous else "publicly"
         await log_command(interaction, "suggest", f"suggested a ra1d on {server_name} ({who})")

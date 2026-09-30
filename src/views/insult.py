@@ -5,6 +5,7 @@ import discord
 import random
 
 from src.utils.helpers import send_message_http
+from src.client import deny, approve
 
 
 
@@ -40,7 +41,7 @@ def insult_panel(user: discord.User, delay: int = 0):
 
                 insults = load_insults()
                 if len(insults) < 5:
-                    await interaction.followup.send("insults.txt must contain at least 5 insults!", ephemeral=True)
+                    await deny(interaction, "insults.txt must contain at least 5 insults!")
                     return False
 
                 app_id = interaction.client.application_id
